@@ -6,6 +6,7 @@ CONFIG -= qt
 LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-system -lsfml-window
 
 SOURCES += \
+        create_background.cpp \
         main.cpp \
         player.cpp
 
@@ -33,5 +34,6 @@ DISTFILES += \
 
 
 HEADERS += \
-    player.h
+    player.h \
+    zombie_arena.h
 

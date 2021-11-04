@@ -15,10 +15,10 @@ class Player
     IntRect m_Arena;
     int m_TileSize;
 
-    bool m_UpPressed;
-    bool m_DownPressed;
-    bool m_LeftPressed;
-    bool m_RightPressed;
+    bool m_UpPressed = false;
+    bool m_DownPressed = false;
+    bool m_LeftPressed = false;
+    bool m_RightPressed = false;
 
     int m_Health;
     int m_MaxHealth;
@@ -46,7 +46,7 @@ public:
     void stopUp();
     void stopDown();
 
-    void update(float elapsedTime, Vector2f mousePosition);
+    void update(float elapsedTime, Vector2i mousePosition);
     void upgradeSpeed();
     void upgradeHealth();
     void increaseHealthLevel(int amount);
