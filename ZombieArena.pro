@@ -8,7 +8,10 @@ LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-system -lsfml-window
 SOURCES += \
         create_background.cpp \
         main.cpp \
-        player.cpp
+        player.cpp \
+        textureholder.cpp \
+        zombie.cpp \
+        zombie_arena.cpp
 
 DISTFILES += \
     fonts/zombiecontrol.ttf \
@@ -35,5 +38,7 @@ DISTFILES += \
 
 HEADERS += \
     player.h \
+    textureholder.h \
+    zombie.h \
     zombie_arena.h
 

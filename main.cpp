@@ -1,6 +1,7 @@
 #include "player.h"
 #include "zombie_arena.h"
 #include <SFML/Graphics.hpp>
+#include "textureholder.h"
 
 using namespace sf;
 
@@ -8,11 +9,10 @@ int main()
 {
     enum class State {PAUSED, LEVELING_UP, GAME_OVER, PLAYING};
     State state = State::GAME_OVER;
-
     Vector2f resolution;
     resolution.x = VideoMode::getDesktopMode().width;
     resolution.y = VideoMode::getDesktopMode().height;
-    RenderWindow window(VideoMode(resolution.x, resolution.y), "Zombie Arena", Style::Fullscreen);
+    RenderWindow window(VideoMode(resolution.x, resolution.y), "Zombie Arena", Style::Default);
     View mainView(FloatRect(0, 0, resolution.x, resolution.y));
     Clock clock;
     Time gameTimeTotal;
@@ -21,8 +21,10 @@ int main()
     Player player;
     IntRect arena;
     VertexArray background;
-    Texture textureBackground;
-    textureBackground.loadFromFile("graphics/background_sheet.png");
+    Texture &textureBackground = TextureHolder::instance().GetTexture("graphics/background_sheet.png");
+    int numZombies;
+    int numZombiesAlive;
+    Zombie* zombies = nullptr;
     /*******************
      *******WHILE*******
      *******************/
@@ -101,7 +103,10 @@ int main()
                 //Aceste linii vor fi modificate
                 //##############################
                 player.spawn(arena, resolution, tileSize);
-
+                numZombies = 10;
+                delete[] zombies;
+                zombies = createHorde(numZombies, arena);
+                numZombiesAlive = numZombies;
                 clock.restart();
             }
         }
@@ -117,6 +122,10 @@ int main()
             player.update(dtAsSeconds, Mouse::getPosition());
             Vector2f playerPosition(player.getCenter());
             mainView.setCenter(player.getCenter());
+            for (int i = 0; i < numZombies; ++i) {
+                if (zombies[i].isAlive())
+                    zombies[i].update(dt.asSeconds(), playerPosition);
+            }
         }
         /*********************
          *******REFRESH*******
@@ -125,6 +134,8 @@ int main()
             window.clear();
             window.setView(mainView);
             window.draw(background, &textureBackground);
+            for (int i = 0; i < numZombies; ++i)
+                window.draw(zombies[i].getSprite());
             window.draw(player.getSprite());
         }
         if (state == State::LEVELING_UP) {
@@ -138,5 +149,6 @@ int main()
         }
         window.display();
     }
+    delete[] zombies;
     return 0;
 }
