@@ -6,8 +6,10 @@ CONFIG -= qt
 LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-system -lsfml-window
 
 SOURCES += \
+        bullet.cpp \
         create_background.cpp \
         main.cpp \
+        pickup.cpp \
         player.cpp \
         textureholder.cpp \
         zombie.cpp \
@@ -37,6 +39,8 @@ DISTFILES += \
 
 
 HEADERS += \
+    bullet.h \
+    pickup.h \
     player.h \
     textureholder.h \
     zombie.h \

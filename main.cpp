@@ -2,6 +2,8 @@
 #include "zombie_arena.h"
 #include <SFML/Graphics.hpp>
 #include "textureholder.h"
+#include "bullet.h"
+#include "pickup.h"
 
 using namespace sf;
 
@@ -22,9 +24,27 @@ int main()
     IntRect arena;
     VertexArray background;
     Texture &textureBackground = TextureHolder::instance().GetTexture("graphics/background_sheet.png");
+
     int numZombies;
     int numZombiesAlive;
     Zombie* zombies = nullptr;
+
+    Bullet bullets[100];
+    int currentBullet = 0;
+    int bulletsSpare = 24;
+    int bulletsInClip = 6;
+    int clipSize = 6;
+    float fireRate = 1;
+    Time lastPressed;
+
+    window.setMouseCursorVisible(false);
+    Sprite spriteCrosshair;
+    Texture textureCrosshair = TextureHolder::instance().GetTexture("graphics/crosshair.png");
+    spriteCrosshair.setTexture(textureCrosshair);
+    spriteCrosshair.setOrigin(25, 55);
+
+    Pickup healthPickup(1);
+    Pickup ammoPickup(2);
     /*******************
      *******WHILE*******
      *******************/
@@ -44,7 +64,17 @@ int main()
                     state = State::LEVELING_UP;
                 }
                 if (state == State::PLAYING) {
-
+                    if (event.key.code == Keyboard::R) {
+                        if (bulletsSpare >= clipSize) {
+                            bulletsInClip = clipSize;
+                            bulletsSpare -= clipSize;
+                        } else if (bulletsSpare > 0) {
+                            bulletsInClip = bulletsSpare;
+                            bulletsSpare = 0;
+                        } else {
+                            //De completat!!!
+                        }
+                    }
                 }
             }
         }
@@ -67,6 +97,16 @@ int main()
                 player.moveRight();
             else
                 player.stopRight();
+            if (Mouse::isButtonPressed(Mouse::Left)) {
+                if (gameTimeTotal.asMilliseconds() - lastPressed.asMilliseconds() > 1000 / fireRate && bulletsInClip > 0) {
+                    bullets[currentBullet].shoot(player.getCenter().x, player.getCenter().y, mouseWorldPosition.x, mouseWorldPosition.y);
+                    ++currentBullet;
+                    if (currentBullet > 99)
+                        currentBullet = 0;
+                    lastPressed = gameTimeTotal;
+                    --bulletsInClip;
+                }
+            }
         }
         if (state == State::LEVELING_UP) {
             if (event.key.code == Keyboard::Num1) {
@@ -95,14 +135,16 @@ int main()
             }
             if (state == State::PLAYING) {
                 //##############################
-                arena.width = 500;
-                arena.height = 500;
+                arena.width = 1000;
+                arena.height = 1000;
                 arena.left = 0;
                 arena.top = 0;
                 int tileSize = createBackground(background, arena);
                 //Aceste linii vor fi modificate
                 //##############################
                 player.spawn(arena, resolution, tileSize);
+                healthPickup.setArena(arena);
+                ammoPickup.setArena(arena);
                 numZombies = 10;
                 delete[] zombies;
                 zombies = createHorde(numZombies, arena);
@@ -119,6 +161,7 @@ int main()
             float dtAsSeconds = dt.asSeconds();
             mouseScreenPosition = Mouse::getPosition();
             mouseWorldPosition = window.mapPixelToCoords(Mouse::getPosition(), mainView);
+            spriteCrosshair.setPosition(mouseWorldPosition);
             player.update(dtAsSeconds, Mouse::getPosition());
             Vector2f playerPosition(player.getCenter());
             mainView.setCenter(player.getCenter());
@@ -126,6 +169,12 @@ int main()
                 if (zombies[i].isAlive())
                     zombies[i].update(dt.asSeconds(), playerPosition);
             }
+            for (int i = 0; i < 100; ++i) {
+                if (bullets[i].isInFlight())
+                    bullets[i].update(dtAsSeconds);
+            }
+            healthPickup.update(dtAsSeconds);
+            ammoPickup.update(dtAsSeconds);
         }
         /*********************
          *******REFRESH*******
@@ -136,7 +185,17 @@ int main()
             window.draw(background, &textureBackground);
             for (int i = 0; i < numZombies; ++i)
                 window.draw(zombies[i].getSprite());
+            for (int i = 0; i < 100; ++i) {
+                if (bullets[i].isInFlight())
+                    window.draw(bullets[i].getShape());
+            }
             window.draw(player.getSprite());
+            if (ammoPickup.isSpawned())
+                window.draw(ammoPickup.getSprite());
+            if (healthPickup.isSpawned())
+                window.draw(healthPickup.getSprite());
+            window.draw(spriteCrosshair);
+
         }
         if (state == State::LEVELING_UP) {
 

@@ -6,7 +6,7 @@ TextureHolder &TextureHolder::instance()
     return th;
 }
 
-Texture &TextureHolder::GetTexture(const string &filename)
+Texture& TextureHolder::GetTexture(const string &filename)
 {
     auto it = m_Textures.find(filename);
     if (it == m_Textures.end()) {
