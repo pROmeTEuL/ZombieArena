@@ -20,7 +20,7 @@ public:
     Bullet();
     void stop();
     bool isInFlight();
-    void shoot(float startX, float startY, float xTarget, float yTarget);
+    void shoot(float startX, float startY, float targetX, float targetY);
     FloatRect getPosition();
     RectangleShape getShape();
     void update(float elapsedTime);
