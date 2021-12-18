@@ -17,7 +17,7 @@ int main()
     Vector2f resolution;
     resolution.x = VideoMode::getDesktopMode().width;
     resolution.y = VideoMode::getDesktopMode().height;
-    RenderWindow window(VideoMode(resolution.x, resolution.y), "Zombie Arena", Style::Default);
+    RenderWindow window(VideoMode(resolution.x, resolution.y), "Zombie Arena", Style::Fullscreen);
     View mainView(FloatRect(0, 0, resolution.x, resolution.y));
     Clock clock;
     Time gameTimeTotal;
