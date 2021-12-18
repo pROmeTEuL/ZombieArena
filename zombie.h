@@ -17,7 +17,7 @@ class Zombie
     Sprite m_Sprite;
     float m_Speed;
     float m_Health;
-    bool m_Alive;
+    bool m_Alive = true;
 public:
     enum class Type {
         BLOATER,

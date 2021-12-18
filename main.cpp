@@ -198,16 +198,15 @@ int main()
                 }
                 if (state == State::PLAYING) {
                     if (event.key.code == Keyboard::R) {
-                        if (bulletsSpare >= clipSize) {
+                        if (bulletsSpare >= clipSize && bulletsInClip != clipSize) {
+                            bulletsSpare -= (clipSize - bulletsInClip);
                             bulletsInClip = clipSize;
-                            bulletsSpare -= clipSize;
                             reload.play();
-                        } else if (bulletsSpare > 0) {
+                        } else if (bulletsSpare > 0 && bulletsInClip != clipSize) {
                             bulletsInClip = bulletsSpare;
                             bulletsSpare = 0;
                             reload.play();
                         } else {
-                            //De completat!!!
                             reloadFailed.play();
                         }
                     }
@@ -333,7 +332,6 @@ int main()
                 if (player.getPosition().intersects(zombies[i].getPosition())
                         && zombies[i].isAlive()) {
                     if (player.hit(gameTimeTotal)) {
-                        // scriu mai tarziu
                         hit.play();
                     }
                     if (player.getHealth() <= 0) {
@@ -350,7 +348,7 @@ int main()
             }
             if (player.getPosition().intersects(ammoPickup.getPosition()) && ammoPickup.isSpawned()) {
                 bulletsSpare += ammoPickup.gotIt();
-                pickup.play();//reload sau pickup???
+                reload.play();
             }
             healthBar.setSize(Vector2f(player.getHealth() * 3, 50));
             framesSinceLastHUDUpdate++;
